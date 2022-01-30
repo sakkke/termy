@@ -14,5 +14,6 @@ pacman_conf="pacman.conf"
 airootfs_image_type="erofs"
 airootfs_image_tool_options=('-zlz4')
 file_permissions=(
+  ["/etc/gshadow"]="0:0:400"
   ["/etc/shadow"]="0:0:400"
 )
