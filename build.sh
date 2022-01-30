@@ -4,7 +4,7 @@ TARGET=termy
 packages=()
 profiles=(baseline termy)
 
-while getopts p: OPT; do
+while getopts k:p: OPT; do
   case $OPT in
     k )
       packages+=("$OPTARG")
