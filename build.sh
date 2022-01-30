@@ -13,6 +13,10 @@ while getopts k:p: OPT; do
     p )
       profiles+=("$OPTARG")
       ;;
+
+    * )
+      exit 1
+      ;;
   esac
 done
 
@@ -21,11 +25,11 @@ profiles+=(_termy)
 rm -fr "$TARGET" configs/_termy
 mkdir "$TARGET" configs/_termy
 
-for package in ${packages[@]}; do
+for package in "${packages[@]}"; do
   echo "$package" >> configs/_termy/packages.x86_64
 done
 
-for profile in ${profiles[@]}; do
+for profile in "${profiles[@]}"; do
   if [[ $profile = _termy ]]; then
     sort -uo configs/_termy/packages.x86_64{,}
   elif [[ -f configs/$profile/packages.x86_64 ]]; then
