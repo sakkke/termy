@@ -34,4 +34,4 @@ for profile in ${profiles[@]}; do
   cp -RT "$(realpath "configs/$profile")" "$TARGET"
 done
 
-mkarchiso -v "$TARGET"
+mkarchiso -o "$TARGET/out" -v -w "$TARGET/work" "$TARGET"
