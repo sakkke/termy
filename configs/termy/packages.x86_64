@@ -15,5 +15,6 @@ texinfo
 tmux
 ttf-fira-code
 ttf-nerd-fonts-symbols-mono
+xorg-drivers
 xorg-server
 xorg-xinit
