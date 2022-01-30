@@ -15,7 +15,7 @@ while getopts k:p: OPT; do
       ;;
 
     * )
-      exit 1
+      exit 3
       ;;
   esac
 done
