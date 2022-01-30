@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ((EUID)); then
+  echo 'This script must be run as root'
+  exit 4
+fi
+
 TARGET=termy
 packages=()
 profiles=(baseline termy)
