@@ -12,5 +12,6 @@ openbox
 texinfo
 tmux
 ttf-fira-code
+ttf-nerd-fonts-symbols-mono
 xorg-server
 xorg-xinit
