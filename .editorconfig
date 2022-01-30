@@ -13,3 +13,6 @@ insert_final_newline = false
 
 [/configs/jp/airootfs/etc/X11/xorg.conf.d/00-keyboard.conf]
 indent_size = 8
+
+[/configs/termy/airootfs/etc/fonts/conf.d/52-termy.conf]
+indent_style = tab
