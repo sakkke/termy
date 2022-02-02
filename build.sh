@@ -7,7 +7,7 @@ fi
 
 TARGET=termy
 packages=()
-profiles=(baseline termy)
+profiles=(baseline termy live)
 
 while getopts k:p: OPT; do
   case $OPT in
