@@ -1,0 +1,176 @@
+#!/bin/bash
+
+if ((EUID)); then
+  echo 'This script must be run as root'
+  exit 3
+fi
+
+function echo_pairs() {
+  local max_key_len
+
+  for ((i = 1; i <= $#; i += 2)); do
+    local chars_len=$(eval "wc -m <<< \"\${$i}\"")
+    if ((max_key_len < chars_len)); then
+      max_key_len=$chars_len
+    fi
+  done
+
+  for ((i = 1; i <= $#; i += 2)); do
+    eval "printf '\\e[1;32m%${max_key_len}s\\e[m -> \\e[3;91m%s\\e[m\\n' \"\${$i}\" \"\${$((i + 1))}\""
+  done
+}
+
+function get_part_by_name() {
+  local device_name=$1
+  local part_num=$2
+
+  local output_format
+
+  if grep '^[mn]' > /dev/null <<< $device_name; then
+    output_format=/dev/%sp%d
+  else
+    output_format=/dev/%s%d
+  fi
+
+  printf $output_format $device_name $part_num
+}
+
+function list_devices() {
+  ls /dev | grep '^\(mmcblk[0-9]\+\|nvme[0-9]\+n[0-9]\+\|sd[a-z]\+\)$'
+}
+
+function list_partitions() {
+  ls /dev | grep '^\(mmcblk[0-9]\+p[0-9]\+\|nvme[0-9]\+n[0-9]\+p[0-9]\+\|sd[a-z]\+[0-9]\+\)$'
+}
+
+echo 'Select installation mode'
+select installation_mode in custom auto; do
+  if [[ -n $installation_mode ]]; then
+    break
+  fi
+done
+
+case $installation_mode in
+  auto )
+    echo 'Select device'
+    select device_name in $(list_devices); do
+      if [[ -n $device_name ]]; then
+        efi_part=$(get_part_by_name $device_name 1)
+        boot_part=$(get_part_by_name $device_name 2)
+        root_part=$(get_part_by_name $device_name 3)
+        break
+      fi
+    done
+    ;;
+
+  custom )
+    echo 'Select EFI system partition'
+    select efi_part_name in $(list_partitions); do
+      if [[ -n $efi_part_name ]]; then
+        efi_part=/dev/$efi_part_name
+        break
+      fi
+    esac
+
+    echo 'Select boot partition'
+    select boot_part_name in $(list_partitions); do
+      if [[ -n $boot_part_name ]]; then
+        boot_part=/dev/$boot_part_name
+        break
+      fi
+    esac
+
+    echo 'Select root partition'
+    select root_part_name in $(list_partitions); do
+      if [[ -n $root_part_name ]]; then
+        root_part=/dev/$root_part_name
+        break
+      fi
+    esac
+    ;;
+esac
+
+echo 'Last prompt before installation'
+echo_pairs \
+  'Installation mode' $installation_mode \
+  Device "$device_name (${device:-custom})" \
+  'EFI system partition' "$efi_part_name ($efi_part)" \
+  'Boot partition' "$boot_part_name ($boot_part)" \
+  'Root partition' "$root_part_name ($root_part)"
+
+while :; do
+  read -p'Continue? [y/N] ' yn
+  case "$yn" in
+    '' | [Nn] )
+      exit 4
+      ;;
+
+    [Yy] )
+      break
+      ;;
+
+    * )
+      :
+      ;;
+  esac
+done
+
+if [[ -n $device ]]; then
+  parted -s /dev/$device_name \
+    mklabel gpt \
+    mkpart termy_efi fat32 0% 512Mib \
+    set 1 esp on \
+    mkpart termy_boot fat32 512Mib 1536Mib \
+    set 2 bls_boot on \
+    mkpart termy_root ext4 1536Mib 100%
+  mkfs.fat -F32 $efi_part
+  mkfs.fat -F32 $boot_part
+  mkfs.ext4 -F $root_part
+fi
+
+mount $root_part /mnt
+mkdir /mnt/{boot,efi}
+mount $boot_part /mnt/boot
+mount $efi_part /mnt/efi
+gzip -1 > /dev/null < /dev/urandom & pid=$!
+pacman-key --init
+pacman-key --populate archlinux
+kill $pid
+pacstrap /mnt - < /opt/termy/pkgs
+genfstab -t PARTUUID /mnt >> /mnt/etc/fstab
+arch-chroot /mnt bash << /arch-chroot
+function validate_username() {
+  local username="$1"
+
+  grep '^[_a-z][-0-9_a-z]\{0,16\}$' > /dev/null <<< "$username"
+}
+
+hwclock --systohc
+sed -i 's/#\(en_US\.UTF-8\)/\1/' /etc/locale.gen
+locale-gen
+passwd -l root
+
+if [[ -f /efi/efi/boot/bootx64.efi ]]; then
+  cp /efi/efi/boot/bootx64.efi{,.bak}
+fi
+
+bootctl --boot-path=/boot --esp-path=/efi install
+
+while :; do
+  echo 'Enter a new user name'
+  read -p'Username: ' username < /dev/tty
+  if validate_username "$username"; then
+    useradd -Gwheel -m $username
+    break
+  fi
+done
+
+while :; do
+  if passwd $username < /dev/tty; then
+    break
+  fi
+done
+/arch-chroot
+cp -RT /opt/termy/overlay /mnt
+umount -R /mnt
+echo 'Installation is complete!'
