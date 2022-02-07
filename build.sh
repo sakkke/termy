@@ -24,7 +24,7 @@ cat > $config << /cat
 Architecture = auto
 HoldPkg = pacman glibc
 LocalFileSigLevel = Optional
-SigLevel = DatabaseOptional Required
+SigLevel = Required DatabaseOptional
 
 # Misc options
 NoProgressBar
@@ -64,6 +64,7 @@ profiles+=(_termy)
 
 rm -fr "$TARGET" configs/_termy
 mkdir "$TARGET" configs/_termy
+mkdir -p configs/_termy/airootfs/opt/termy
 
 for package in "${packages[@]}"; do
   echo "$package" >> configs/_termy/packages.x86_64
@@ -78,7 +79,7 @@ for profile in "${profiles[@]}"; do
       linux \
       linux-firmware \
       | xargs -n1 >> configs/_termy/airootfs/opt/termy/pkgs
-    sort -uo configs/_termy/airootfs/opt/termy/pkgs{,}
+    sort -o configs/_termy/airootfs/opt/termy/pkgs{,}
     pacman \
       --dbpath $dbpath1 \
       --downloadonly \
@@ -86,7 +87,7 @@ for profile in "${profiles[@]}"; do
       --refresh \
       --sync \
       - < configs/_termy/airootfs/opt/termy/pkgs
-    find /var/cache/pacman/pkg -maxdepth 1 -mindepth 1 | xargs -0 -I{} ln -s "{}" $termy_repo
+    find /var/cache/pacman/pkg -maxdepth 1 -mindepth 1 -print0 | xargs -0I{} ln -s "{}" $termy_repo
     ln -s /var/lib/pacman/sync/community.db $termy_repo
     ln -s /var/lib/pacman/sync/core.db $termy_repo
     ln -s /var/lib/pacman/sync/extra.db $termy_repo
@@ -101,16 +102,17 @@ darkhttpd $termy_repo --port $httpd_port
       --dbpath $dbpath2 \
       --downloadonly \
       --noconfirm \
+      --refresh \
       --sync \
       - < configs/_termy/airootfs/opt/termy/pkgs
     pkill -P $pid
-    repo-add -n configs/_termy/airootfs/opt/termy/pkgs/termy.db.tar.gz *.pkg.tar.{xz,zst}
+    repo-add -n configs/_termy/airootfs/opt/termy/pkgs/{termy.db.tar.gz,*.pkg.tar.{xz,zst}}
     cat > configs/_termy/pacman.conf << /cat
 [options]
 Architecture = auto
 HoldPkg = pacman glibc
 LocalFileSigLevel = Optional
-SigLevel = DatabaseOptional Required
+SigLevel = Required DatabaseOptional
 
 # Misc options
 NoProgressBar
