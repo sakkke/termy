@@ -16,4 +16,5 @@ airootfs_image_tool_options=('-zlz4')
 file_permissions=(
   ["/etc/gshadow"]="0:0:400"
   ["/etc/shadow"]="0:0:400"
+  ["/opt/termy/bin/termy-install"]="0:0:755"
 )
