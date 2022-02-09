@@ -1,3 +1,3 @@
 #!/bin/bash
 TARGET=termy
-rm -fr "$TARGET"
+rm -fr "$TARGET" configs/_termy
