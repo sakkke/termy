@@ -44,7 +44,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: true # Set ${{ github.event_name == &#39;push&#39; &amp;&amp; github.ref == &#39;refs/heads/main&#39; }} to validate only diff with main branch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # ADD YOUR CUSTOM ENV VARIABLES HERE TO OVERRIDE VALUES OF .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
-          FILTER_REGEX_EXCLUDE: archiso
+          FILTER_REGEX_EXCLUDE: (archiso|\.config/baseline)
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
