@@ -81,6 +81,7 @@ for profile in "${profiles[@]}"; do
       | xargs -n1 >> configs/_termy/airootfs/opt/termy/pkgs
     sort -o configs/_termy/airootfs/opt/termy/pkgs{,}
     pacman \
+      --config pacman.conf \
       --dbpath $dbpath1 \
       --downloadonly \
       --noconfirm \
