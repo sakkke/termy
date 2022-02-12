@@ -107,7 +107,7 @@ darkhttpd $termy_repo --port $httpd_port
       --sync \
       - < configs/_termy/airootfs/opt/termy/pkgs
     pkill -P $pid
-    repo-add -n configs/_termy/airootfs/opt/termy/pkgs/{termy.db.tar.gz,*.pkg.tar.{xz,zst}}
+    repo-add -n configs/_termy/airootfs/opt/termy/pkg/{termy.db.tar.gz,*.pkg.tar.{xz,zst}}
     cat > configs/_termy/pacman.conf << /cat
 [options]
 Architecture = auto
