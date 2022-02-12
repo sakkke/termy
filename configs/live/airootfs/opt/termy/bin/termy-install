@@ -70,7 +70,7 @@ case $installation_mode in
         efi_part=/dev/$efi_part_name
         break
       fi
-    esac
+    done
 
     echo 'Select boot partition'
     select boot_part_name in $(list_partitions); do
@@ -78,7 +78,7 @@ case $installation_mode in
         boot_part=/dev/$boot_part_name
         break
       fi
-    esac
+    done
 
     echo 'Select root partition'
     select root_part_name in $(list_partitions); do
@@ -86,7 +86,7 @@ case $installation_mode in
         root_part=/dev/$root_part_name
         break
       fi
-    esac
+    done
     ;;
 esac
 
