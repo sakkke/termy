@@ -1,5 +1,22 @@
 #!/bin/bash
 
+function show_progress() {
+  local lineno=$1
+  local script_len=$2
+  local line="$(sed -n ${lineno}p "$BASH_SOURCE" | sed 's/\("\|\\\)/\\\1/g')"
+  awk -f - << /awk
+BEGIN {
+  printf \
+    "\\033[7;34mProgress: [%3d%%]\\033[m %d: \\033[34m%s\\033[m\\n",
+    $lineno / $script_len * 100,
+    $lineno,
+    "$line"
+}
+/awk
+}
+
+trap "show_progress \$LINENO $(wc -l < "$BASH_SOURCE")" DEBUG
+
 if ((EUID)); then
   echo 'This script must be run as root'
   exit 4
