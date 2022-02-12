@@ -142,7 +142,9 @@ Server = file://$PWD/configs/_termy/airootfs/opt/termy/pkg
       ;;
 
     * )
-      cp -RT "configs/$profile/airootfs" configs/_termy/airootfs/opt/termy/overlay
+      if [[ -d configs/$profile/airootfs ]]; then
+        cp -RT "configs/$profile/airootfs" configs/_termy/airootfs/opt/termy/overlay
+      fi
       ;;
   esac
 done
