@@ -1,3 +1,6 @@
 [submodule "archiso"]
 	path = archiso
 	url = https://github.com/archlinux/archiso.git
+[submodule "makearchiso"]
+	path = makearchiso
+	url = https://github.com/sakkke/makearchiso.git
