@@ -66,11 +66,11 @@ rm -fr "$TARGET" configs/_termy
 mkdir "$TARGET" configs/_termy
 mkdir -p configs/_termy/airootfs/opt/termy
 
-for package in "${packages[@]}"; do
+for package in ${packages[@]}; do
   echo "$package" >> configs/_termy/packages.x86_64
 done
 
-for profile in "${profiles[@]}"; do
+for profile in ${profiles[@]}; do
   if [[ $profile = _termy ]]; then
     sort -uo configs/_termy/packages.x86_64{,}
     uniq -u configs/{_termy,baseline}/packages.x86_64 > configs/_termy/airootfs/opt/termy/pkgs
