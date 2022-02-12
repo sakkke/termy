@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source makearchiso.config.sh
+
 function show_progress() {
   local lineno=$1
   local script_len=$2
@@ -7,7 +9,7 @@ function show_progress() {
   awk -f - << /awk
 BEGIN {
   printf \
-    "\\033[7;34mProgress: [%3d%%]\\033[m %d: \\033[34m%s\\033[m\\n",
+    "\\033[7;${progress_color}mProgress: [%3d%%]\\033[m %d: \\033[${progress_color}m%s\\033[m\\n",
     $lineno / $script_len * 100,
     $lineno,
     "$line"
@@ -22,19 +24,19 @@ if ((EUID)); then
   exit 4
 fi
 
-TARGET=termy
+WORK_DIR=$brand_name.work
 httpd_port=8888
 packages=()
-profiles=(baseline termy live)
+profiles=(baseline $brand_name live)
 
 config=$(mktemp)
 dbpath1=$(mktemp -d)
 dbpath2=$(mktemp -d)
+live_repo=$(mktemp -d)
 mirrorlist=$(mktemp)
 pidfile=$(mktemp)
-termy_repo=$(mktemp -d)
 
-trap "rm -fr $config $dbpath1 $dbpath2 $mirrorlist $pidfile $termy_repo" EXIT
+trap "rm -fr $config $dbpath1 $dbpath2 $mirrorlist $pidfile $live_repo" EXIT
 
 cat > $config << /cat
 [options]
@@ -77,26 +79,26 @@ while getopts k:p: OPT; do
   esac
 done
 
-profiles+=(_termy)
+profiles+=(_$brand_name)
 
-rm -fr "$TARGET" configs/_termy
-mkdir "$TARGET" configs/_termy
-mkdir -p configs/_termy/airootfs/opt/termy
+rm -fr "$WORK_DIR" configs/_$brand_name
+mkdir "$WORK_DIR" configs/_$brand_name
+mkdir -p configs/_$brand_name/airootfs/opt/$brand_name
 
 for package in ${packages[@]}; do
-  echo "$package" >> configs/_termy/packages.x86_64
+  echo "$package" >> configs/_$brand_name/packages.x86_64
 done
 
 for profile in ${profiles[@]}; do
-  if [[ $profile = _termy ]]; then
-    sort -uo configs/_termy/packages.x86_64{,}
-    uniq -u configs/{_termy,baseline}/packages.x86_64 > configs/_termy/airootfs/opt/termy/pkgs
+  if [[ $profile = _$brand_name ]]; then
+    sort -uo configs/_$brand_name/packages.x86_64{,}
+    uniq -u configs/{_$brand_name,baseline}/packages.x86_64 > configs/_$brand_name/airootfs/opt/$brand_name/pkgs
     echo \
       base \
       linux \
       linux-firmware \
-      | xargs -n1 >> configs/_termy/airootfs/opt/termy/pkgs
-    sort -o configs/_termy/airootfs/opt/termy/pkgs{,}
+      | xargs -n1 >> configs/_$brand_name/airootfs/opt/$brand_name/pkgs
+    sort -o configs/_$brand_name/airootfs/opt/$brand_name/pkgs{,}
     pacman \
       --config pacman.conf \
       --dbpath $dbpath1 \
@@ -104,28 +106,28 @@ for profile in ${profiles[@]}; do
       --noconfirm \
       --refresh \
       --sync \
-      - < configs/_termy/airootfs/opt/termy/pkgs
-    find /var/cache/pacman/pkg -maxdepth 1 -mindepth 1 -print0 | xargs -0I{} ln -s "{}" $termy_repo
-    ln -s /var/lib/pacman/sync/community.db $termy_repo
-    ln -s /var/lib/pacman/sync/core.db $termy_repo
-    ln -s /var/lib/pacman/sync/extra.db $termy_repo
+      - < configs/_$brand_name/airootfs/opt/$brand_name/pkgs
+    find /var/cache/pacman/pkg -maxdepth 1 -mindepth 1 -print0 | xargs -0I{} ln -s "{}" $live_repo
+    ln -s /var/lib/pacman/sync/community.db $live_repo
+    ln -s /var/lib/pacman/sync/core.db $live_repo
+    ln -s /var/lib/pacman/sync/extra.db $live_repo
     bash << /bash & sleep 10
 echo \$\$ > $pidfile
-darkhttpd $termy_repo --port $httpd_port
+darkhttpd $live_repo --port $httpd_port
 /bash
     pid=$(cat $pidfile)
     pacman \
-      --cachedir configs/_termy/airootfs/opt/termy/pkg \
+      --cachedir configs/_$brand_name/airootfs/opt/$brand_name/pkg \
       --config $config \
       --dbpath $dbpath2 \
       --downloadonly \
       --noconfirm \
       --refresh \
       --sync \
-      - < configs/_termy/airootfs/opt/termy/pkgs
+      - < configs/_$brand_name/airootfs/opt/$brand_name/pkgs
     pkill -P $pid
-    repo-add -n configs/_termy/airootfs/opt/termy/pkg/{termy.db.tar.gz,*.pkg.tar.{xz,zst}}
-    cat > configs/_termy/pacman.conf << /cat
+    repo-add -n configs/_$brand_name/airootfs/opt/$brand_name/pkg/{$brand_name.db.tar.gz,*.pkg.tar.{xz,zst}}
+    cat > configs/_$brand_name/pacman.conf << /cat
 [options]
 Architecture = auto
 HoldPkg = pacman glibc
@@ -145,25 +147,25 @@ Include = /etc/pacman.d/mirrorlist
 [community]
 Include = /etc/pacman.d/mirrorlist
 
-[termy]
+[$brand_name]
 SigLevel = Optional TrustAll
-Server = file://$PWD/configs/_termy/airootfs/opt/termy/pkg
+Server = file://$PWD/configs/_$brand_name/airootfs/opt/$brand_name/pkg
 /cat
   elif [[ -f configs/$profile/packages.x86_64 ]]; then
-    cat "configs/$profile/packages.x86_64" >> configs/_termy/packages.x86_64
+    cat "configs/$profile/packages.x86_64" >> configs/_$brand_name/packages.x86_64
   fi
-  cp -RT "$(realpath "configs/$profile")" "$TARGET"
+  cp -RT "$(realpath "configs/$profile")" "$WORK_DIR"
   case "$profile" in
-    _termy | baseline | live )
+    _$brand_name | baseline | live )
       :
       ;;
 
     * )
       if [[ -d configs/$profile/airootfs ]]; then
-        cp -RT "configs/$profile/airootfs" configs/_termy/airootfs/opt/termy/overlay
+        cp -RT "configs/$profile/airootfs" configs/_$brand_name/airootfs/opt/$brand_name/overlay
       fi
       ;;
   esac
 done
 
-mkarchiso -o "$TARGET/out" -v -w "$TARGET/work" "$TARGET"
+mkarchiso -o "$WORK_DIR/out" -v -w "$WORK_DIR/work" "$WORK_DIR"
