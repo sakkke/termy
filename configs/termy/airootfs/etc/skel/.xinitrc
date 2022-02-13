@@ -1,1 +1,3 @@
-openbox-session & exec kitty --start-as=fullscreen
+openbox-session &
+~/.fehbg &
+exec kitty --start-as=fullscreen
