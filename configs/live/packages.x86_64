@@ -9,6 +9,7 @@ networkmanager
 openbox
 pcurses
 picom
+polkit
 simplescreenrecorder
 sudo
 texinfo
