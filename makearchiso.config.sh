@@ -1,4 +1,4 @@
 #!/bin/bash
 
 brand_name=termy
-progress_color=34
+progress_color=36
