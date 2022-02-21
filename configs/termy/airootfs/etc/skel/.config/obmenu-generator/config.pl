@@ -70,6 +70,6 @@ our $CONFIG = {
                            },
   "locale_support"      => 1,
   "missing_icon"        => "gtk-missing-image",
-  "terminal"            => "xterm",
+  "terminal"            => "kitty",
   "VERSION"             => "0.90",
 }
