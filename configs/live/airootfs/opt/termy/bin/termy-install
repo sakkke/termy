@@ -93,10 +93,10 @@ esac
 echo 'Last prompt before installation'
 echo_pairs \
   'Installation mode' $installation_mode \
-  Device "$device_name (${device:-custom})" \
-  'EFI system partition' "$efi_part_name ($efi_part)" \
-  'Boot partition' "$boot_part_name ($boot_part)" \
-  'Root partition' "$root_part_name ($root_part)"
+  Device "${device_name:-CUSTOM}" \
+  'EFI system partition' "${efi_part##*/}" \
+  'Boot partition' "${boot_part##*/}" \
+  'Root partition' "${root_part##*/}"
 
 while :; do
   read -p'Continue? [y/N] ' yn
