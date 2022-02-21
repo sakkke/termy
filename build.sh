@@ -1,3 +1,5 @@
 #!/bin/bash
 
-makearchiso/bin/makearchiso "$@"
+makearchiso/bin/makearchiso \
+  -K obmenu-generator \
+  "$@"
