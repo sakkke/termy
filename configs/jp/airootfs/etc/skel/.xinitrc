@@ -1,3 +1,4 @@
+#!/bin/sh
 xset s 300 300 &
 xss-lock xtrlock &
 fcitx5 &
