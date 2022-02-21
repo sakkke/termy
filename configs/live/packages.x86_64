@@ -19,3 +19,5 @@ ttf-nerd-fonts-symbols-mono
 xorg-drivers
 xorg-server
 xorg-xinit
+xss-lock
+xtrlock

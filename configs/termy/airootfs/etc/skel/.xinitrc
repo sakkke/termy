@@ -1,3 +1,5 @@
+xset s 300 300 &
+xss-lock xtrlock &
 openbox-session &
 ~/.fehbg &
 picom --config ~/.config/picom.conf &
