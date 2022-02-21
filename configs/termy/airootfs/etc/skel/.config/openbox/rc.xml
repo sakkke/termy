@@ -330,6 +330,21 @@
       <command>rofi -icon-theme Papirus -show run -show-icons</command>
     </action>
   </keybind>
+  <keybind key="XF86AudioLowerVolume">
+    <action name="Execute">
+      <command>pamixer -d 5</command>
+    </action>
+  </keybind>
+  <keybind key="XF86AudioMute">
+    <action name="Execute">
+      <command>pamixer -t</command>
+    </action>
+  </keybind>
+  <keybind key="XF86AudioRaiseVolume">
+    <action name="Execute">
+      <command>pamixer -i 5</command>
+    </action>
+  </keybind>
 </keyboard>
 
 <mouse>
