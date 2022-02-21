@@ -325,6 +325,11 @@
       <command>sh -c 'maim "$HOME/Screenshot_$(date +%Y%m%d-%H%M%S).png"'</command>
     </action>
   </keybind>
+  <keybind key="W-space">
+    <action name="Execute">
+      <command>rofi -icon-theme Papirus -show run -show-icons</command>
+    </action>
+  </keybind>
 </keyboard>
 
 <mouse>
