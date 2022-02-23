@@ -17,5 +17,6 @@ file_permissions=(
   ["/etc/gshadow"]="0:0:400"
   ["/etc/shadow"]="0:0:400"
   ["/etc/skel/.fehbg"]="0:0:754"
+  ["/etc/skel/.xinitrc"]="0:0:755"
   ["/opt/termy/bin/termy-install"]="0:0:755"
 )
