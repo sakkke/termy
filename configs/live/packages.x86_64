@@ -1,11 +1,13 @@
 base-devel
 brightnessctl
 btop
+dkms
 feh
 firewalld
 fish
 inter-font
 kitty
+linux-headers
 maim
 man
 neovim
