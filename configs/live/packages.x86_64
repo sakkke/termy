@@ -17,6 +17,7 @@ pcurses
 picom
 pipewire
 pipewire-pulse
+pamixer
 polkit
 rofi
 simplescreenrecorder
