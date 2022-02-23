@@ -315,6 +315,11 @@
       <command>sh -c 'maim -s "$HOME/Screenshot_$(date +%Y%m%d-%H%M%S).png"'</command>
     </action>
   </keybind>
+  <keybind key="W-l">
+    <action name="Execute">
+      <command>xdg-screensaver activate</command>
+    </action>
+  </keybind>
   <keybind key="W-r">
     <action name="Execute">
       <command>simplescreenrecorder</command>

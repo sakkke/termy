@@ -27,6 +27,7 @@ sudo
 texinfo
 ttf-fira-code
 ttf-nerd-fonts-symbols-mono
+xdg-utils
 xorg-drivers
 xorg-server
 xorg-xinit
