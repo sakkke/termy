@@ -2,7 +2,7 @@
 # shellcheck disable=SC2034
 
 iso_name="termy"
-iso_label="TERMY_$(git rev-parse --short HEAD)"
+iso_label="TERMY_$(git rev-parse --short HEAD | tr [:lower:] [:upper:])"
 iso_publisher="termy <https://github.com/sakkke/termy>"
 iso_application="termy"
 iso_version="$(git rev-parse --short HEAD)"
