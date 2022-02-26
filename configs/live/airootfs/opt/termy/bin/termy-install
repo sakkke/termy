@@ -115,7 +115,7 @@ while :; do
   esac
 done
 
-if [[ -n $device ]]; then
+if [[ -n $device_name ]]; then
   parted -s /dev/$device_name \
     mklabel gpt \
     mkpart termy_efi fat32 0% 512Mib \
