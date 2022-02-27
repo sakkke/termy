@@ -137,8 +137,8 @@ pacman-key --init
 pacman-key --populate archlinux
 kill $pid
 pacstrap /mnt - < /opt/termy/pkgs
-genfstab -t PARTUUID /mnt >> /mnt/etc/fstab
-arch-chroot /mnt bash << /arch-chroot
+genfstab -t PARTLABEL /mnt >> /mnt/etc/fstab
+arch-chroot /mnt bash << '/arch-chroot'
 function validate_username() {
   local username="$1"
 
