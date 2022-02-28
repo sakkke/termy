@@ -151,7 +151,7 @@ locale-gen
 passwd -l root
 
 if [[ -f /efi/efi/boot/bootx64.efi ]]; then
-  cp /efi/efi/boot/bootx64.efi{,.bak}
+  cp /efi/efi/boot/bootx64.efi /bootx64.efi.bak
 fi
 
 bootctl --boot-path=/boot --esp-path=/efi install
