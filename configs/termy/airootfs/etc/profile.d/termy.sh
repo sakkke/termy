@@ -1,2 +1,2 @@
 export EDITOR=nvim
-export SHELL=/usr/bin/fish
+export SHELL=/usr/bin/nu

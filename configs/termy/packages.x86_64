@@ -6,7 +6,6 @@ dkms
 dosfstools
 feh
 firewalld
-fish
 inter-font
 kitty
 linux-headers
@@ -14,6 +13,7 @@ maim
 man
 neovim
 networkmanager
+nushell
 openbox
 papirus-icon-theme
 parted
